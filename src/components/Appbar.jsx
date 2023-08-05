@@ -1,43 +1,40 @@
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import {Link} from 'react-router-dom';
-import { useEffect,useState } from 'react';
-
+import {useRecoilValue,useSetRecoilState} from 'recoil';
+import userState from '../stores/atoms/user';
+import usernameState from '../stores/selectors/usernameState';
+import isLoadingState from '../stores/selectors/isLoadingState';
+import { useNavigate } from 'react-router-dom';
 
 function Appbar(){
 
-    const [userEmail, setUserEmail] = useState(null);
+    const useNav = useNavigate();
+    const isLoading = useRecoilValue(isLoadingState);
+    const username = useRecoilValue(usernameState);
+    const setUser = useSetRecoilState(userState);
 
-    useEffect(()=>{
-        
-        if(localStorage.getItem('token') != null){
-            fetch("http://localhost:3000/admin/me",{
-            method:"GET",
-            headers: {
-                "Authorization": "Bearer " + localStorage?.getItem("token")
-            }
-            }).then(response => response.json()).then(data => {
-                if(data){
-                    console.log();
-                    setUserEmail(data.username.username);
+
+    if(isLoading==true){
+        return <>Loading...</>
+    }
+    else{
+        return (
+            <div style={{display:"flex", justifyContent:'space-between', padding:30}}>
+            <div>
+            <Typography>Coursera</Typography>
+            </div>
+            <div>      
+                { !username ? 
+                <><Link to="/signup"><Button style={{marginRight:10}} size={"medium"} variant="contained">Sign up</Button></Link>
+                <Link to="/login"><Button size={"medium"} variant="contained">Sign in</Button></Link></> :
+                <div style={{display:'flex',width:150}}> <h5>{username} </h5>
+                <Button style={{height:50, marginLeft:15}} onClick={()=>{localStorage.setItem('token',null); setUser({isLoading:false, username:null}); useNav('/login')}} size={"small"} variant="contained">LogOut</Button></div>
                 }
-            });
-        }        
-    },[])
+            </div>
+        </div>)
 
-    return (
-    <div style={{display:"flex", justifyContent:"space-between", padding:10}}>
-        <div>
-        <Typography>Coursera</Typography>
-        </div>
-        <div>      
-            { !userEmail ? 
-            <><Link to="/signup"><Button style={{marginRight:10}} size={"medium"} variant="contained">Sign up</Button></Link>
-            <Link to="/login"><Button size={"medium"} variant="contained">Sign in</Button></Link></> :<> <h5>{userEmail} </h5>
-            <Button onClick={()=>{localStorage.setItem('token',null); setUserEmail(null)}} size={"medium"} variant="contained">LogOut</Button></>
-            }
-        </div>
-    </div>)
+    }
 }
 
 export default Appbar;

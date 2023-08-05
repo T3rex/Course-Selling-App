@@ -3,6 +3,8 @@ import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
 
 
@@ -55,6 +57,42 @@ function handleClick(title,desc) {
                     }} fullWidth={true} label="Description" variant="outlined" />
                     <br/>
                     <br/>
+                    <label>
+                    <input
+                    style={{ display: 'none' }}
+                    id="upload-photo"
+                    name="upload-photo"
+                    type="file"
+                    />
+                     <Fab
+                        color="primary"
+                        size="small"
+                        component="span"
+                        aria-label="add"
+                        variant="extended"
+                    >
+                        <AddIcon /> Upload photo
+                    </Fab>
+                    </label>
+                    <br/>
+                    <br/>
+                    {/* <input
+                    style={{ display: "none" }}
+                    id="upload-photo"
+                    name="upload-photo"
+                    type="file"
+                    />
+                    <Fab
+                    color="secondary"
+                    size="small"
+                    component="span"
+                    aria-label="add"
+                    variant="extended"
+                    >
+                    <AddIcon /> Upload photo
+                    </Fab> */}
+
+                    
                     <Button onClick={()=> handleClick(title,desc)} size={"large"} variant="contained">Add course</Button>
                     <br/>
                     <br/>
