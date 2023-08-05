@@ -7,7 +7,7 @@ import InitUser from './components/InitUser';
 function App() {
   
   return (    
-    <div style={{width: "100vw", height: "100vh", backgroundColor: "#eeeeee", }}>
+    <div style={{width: "100vw", height: "100%", backgroundColor: "#eeeeee", }}>
        <RecoilRoot>
           <Appbar/>
           <InitUser/>

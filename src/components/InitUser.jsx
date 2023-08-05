@@ -13,8 +13,7 @@ const InitUser = () =>{
                     "Authorization": "Bearer " + localStorage?.getItem("token")
                 }
             });
-            console.log(response.data.user.username);
-          
+                     
             if(response.data.user.username){
                 setUser({
                     isLoading: false,

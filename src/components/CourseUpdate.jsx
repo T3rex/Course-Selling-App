@@ -5,40 +5,19 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button'; 
 import Typography from '@mui/material/Typography';
 import axios from 'axios';
+import { useRecoilValue, useSetRecoilState,useRecoilState } from "recoil";
+import courseState from "../stores/atoms/course";
+import { isCourseLoading,courseTitleState,courseDescState, coursePriceState, courseImgLinkState } from "../stores/selectors/courseState";
 
 
 const CourseUpdate =()=>{
-    
-    const [title,setTitle] = useState("");
-    const [desc,setDesc] = useState("");
-    const [price,setPrice] = useState("");
-    const [imgLink,setImgLink] = useState("");
-    const {courseId} = useParams();
-    
-    function handleClick(title,desc,price,imgLink,courseId) {
 
-        const updateCourse = async () =>{
-            await axios.put('http://localhost:3000/admin/courses/'+ courseId,
-                {                                
-                    headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer '+ localStorage.getItem('token')
-                            },
-                    body: JSON.stringify({
-                        title: title,
-                        description: desc,
-                        price:price,
-                        imageLink : imgLink,
-                    })        
-                } )
-        
-        }
-        updateCourse();
-    }
+    const courseId = useParams();
+    const courseLoading = useRecoilValue(isCourseLoading);
+    const setCourse = useSetRecoilState(courseState);    
     useEffect(()=>{
        const getCourse = async () =>{
-            const response = await axios.get('http://localhost:3000/admin/courses/'+ courseId,
+            const response = await axios.get('http://localhost:3000/admin/courses/'+ courseId.courseId,
                             {                                
                                 headers: {
                                         'Accept': 'application/json',
@@ -46,17 +25,75 @@ const CourseUpdate =()=>{
                                         'Authorization': 'Bearer '+ localStorage.getItem('token')
                                         },                                      
                             } )
-            setTitle(response.data.course.title)
-            setDesc(response.data.course.description)
-            setPrice(response.data.course.price)
-            setImgLink(response.data.course.imageLink)
+            
+            setCourse({isLoading:false,course: response.data.course});
         }
         getCourse();
     },[])
+    if(courseLoading){
+        return <>Loading...</>
+    }
+    return( 
+        <div>
+            <Banner/>
+            <div style={{display:'flex', justifyContent:'space-evenly' }}>
+                <UpdateCard/>
+                <CourseCard/>
+            </div>
+        </div>
+    )
+}
 
+const Banner =()=>{
+    const courseTitle = useRecoilValue(courseTitleState);
+    return (
+        <div>{courseTitle}</div>
+    )
+}
+
+
+const UpdateCard =()=>{
+    
+    const courseId = useParams();
+    const [courseDetails,setCourse] = useRecoilState(courseState);    
+    const [title,setTitle] = useState(courseDetails.course.title);
+    const [desc,setDesc] = useState(courseDetails.course.description);
+    const [price,setPrice] = useState(courseDetails.course.price);
+    const [imgLink,setImgLink] = useState(courseDetails.course.imageLink);
+    
+    function handleClick(title,desc,price,imgLink,courseId) {       
+        const updateCourse = async () =>{           
+           const res= await axios.put('http://localhost:3000/admin/courses/'+ courseId.courseId,{
+            title: title,
+            description: desc,
+            price: price,
+            imageLink: imgLink,
+            publish: true
+           },
+            {                           
+                headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer '+ localStorage.getItem('token')
+                        },                                      
+                        
+            } )
+            const updateCourse = {
+                _id: courseDetails.course._id,
+                title: title,
+                description: desc,
+                price: price,
+                imageLink: imgLink,
+                publish: true
+            }
+            setCourse({isLoading:false,course:updateCourse});
+        }
+        updateCourse();
+    }
+ 
     return(<>
      <center>
-            <Card style={{width:300 , marginTop: 100, padding:100}} >        
+            <Card style={{width:200, height:300 , marginTop: 50,marginBottom:50, padding:100}} >        
                 <div>
                      <Typography variant="p" component="div">
                     Change Course Details
@@ -100,7 +137,7 @@ const CourseUpdate =()=>{
                     variant="outlined" />
                     <br/>
                     <br/>
-                    <Button onClick={()=> handleClick(title,desc,price,imgLink,courseId)} size={"large"} variant="contained">Add course</Button>
+                    <Button onClick={()=> handleClick(title,desc,price,imgLink,courseId)} size={"large"} variant="contained">Edit course</Button>
                     <br/>
                     <br/>
                 </div>
@@ -108,5 +145,38 @@ const CourseUpdate =()=>{
         </center>   
     </>)
 }
+
+const CourseCard =() =>{
+
+    const courseTitle = useRecoilValue(courseTitleState);
+    const courseDesc = useRecoilValue(courseDescState);   
+    const coursePrice = useRecoilValue(coursePriceState); 
+    const courseImg = useRecoilValue(courseImgLinkState)  
+
+     return (
+        <Card style={{width:200, height:300 , marginTop: 50,marginBottom:50, padding:100}} >        
+                <div>
+                     <Typography variant="p" component="div">
+                        {courseTitle}
+                    </Typography>
+                    <br/>
+                    <Typography variant="p" component="div">
+                        {courseDesc}
+                    </Typography>
+                    <br/>
+                    <Typography variant="p" component="div">
+                        {coursePrice}
+                    </Typography>
+                    <br/>
+                    <Typography variant="p" component="div">
+                        {courseImg}
+                    </Typography>
+                    <br/>
+                    
+                </div>
+            </Card>
+     )
+}
+
 
 export default CourseUpdate;
