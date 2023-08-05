@@ -6,7 +6,7 @@ import Signup from './components/Signup.jsx'
 import Signin from './components/Signin.jsx'
 import AddCourse from './components/AddCourse.jsx'
 import Courses from './components/Courses.jsx'
-import Course from './components/Course.jsx'
+import CourseUpdate from './components/CourseUpdate.jsx'
 
 
   const appRouter = createBrowserRouter([
@@ -36,7 +36,7 @@ import Course from './components/Course.jsx'
         },
         {
         path: '/admin/courses/:courseId',
-          element :<Course/>  
+          element :<CourseUpdate/>  
         }
       ]
     },
